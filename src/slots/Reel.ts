@@ -57,7 +57,7 @@ export class Reel {
     for (const symbol of this.symbols) {
       symbol.x += this.speed * delta;
       if (symbol.x > this.symbolSize * this.symbolCount) {
-        symbol.x -= this.symbolSize * (this.symbolCount + 1);
+        symbol.x -= this.symbolSize * this.symbols.length;
       }
     }
 
@@ -66,8 +66,7 @@ export class Reel {
       this.speed *= SLOWDOWN_RATE;
 
       // If speed is very low, stop completely and snap to grid
-      if (this.speed < 0.5) {
-        this.speed = 0;
+      if (this.speed < 5) {
         this.snapToGrid();
       }
     }
@@ -75,6 +74,16 @@ export class Reel {
 
   private snapToGrid(): void {
     // TODO: Snap symbols to horizontal grid positions
+    const snapThreshold = this.symbolSize * 0.15;
+
+    // If the first symbol is close to the grid, snap it to the grid
+    // Offset the first symbol by the symbol size to prevent it from jumping back to the previous position
+    if ((this.symbols[0].x + this.symbolSize) % this.symbolSize < snapThreshold) {
+      this.speed = 0;
+      for (const symbol of this.symbols) {
+        symbol.x = Math.floor(symbol.x / this.symbolSize) * this.symbolSize;
+      }
+    }
   }
 
   public startSpin(): void {
