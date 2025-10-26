@@ -121,6 +121,7 @@ export class SlotMachine {
         // If this is the last reel, check for wins and enable spin button
         if (i === this.reels.length - 1) {
           setTimeout(() => {
+            sound.stop("Reel spin");
             this.checkWin();
             this.isSpinning = false;
 
@@ -145,6 +146,10 @@ export class SlotMachine {
 
       if (this.winAnimation) {
         // TODO: Play the win animation found in "big-boom-h" spine
+        if (this.winAnimation.state.hasAnimation("start")) {
+          this.winAnimation.visible = true;
+          this.winAnimation.state.setAnimation(0, "start", false);
+        }
       }
     }
   }
@@ -174,11 +179,14 @@ export class SlotMachine {
       if (winSpineData) {
         this.winAnimation = new Spine(winSpineData.spineData);
 
-        this.winAnimation.x =
+        this.winAnimation.x = (SYMBOL_SIZE * SYMBOLS_PER_REEL) / 2;
+        this.winAnimation.y =
           (REEL_HEIGHT * REEL_COUNT + REEL_SPACING * (REEL_COUNT - 1)) / 2;
-        this.winAnimation.y = (SYMBOL_SIZE * SYMBOLS_PER_REEL) / 2;
 
         this.winAnimation.visible = false;
+        this.winAnimation.addEventListener("complete", () => {
+          if (this.winAnimation) this.winAnimation.visible = false;
+        });
 
         this.container.addChild(this.winAnimation);
       }
