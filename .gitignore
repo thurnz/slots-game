@@ -10,5 +10,10 @@ yarn-error.log*
 
 .vscode/*
 /.idea/
+/dist
+/build
+/coverage
 
 .DS_Store
+*.log
+Thumbs.db
